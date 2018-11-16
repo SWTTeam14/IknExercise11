@@ -103,15 +103,12 @@ namespace Linklaget
 
 		public int Receive (ref byte[] buf)
 		{
-            
-            
-
             while(buffer[0] != 'A'){
                 // Do nothing
                 serialPort.Read(buffer, 0, buffer.Length);
             }
             
-            List<Byte> byteList = new List<byte>();
+            List<byte> byteList = new List<byte>();
 
 		    for (int i = 1; i < buffer.Length; i++)
 		    {
