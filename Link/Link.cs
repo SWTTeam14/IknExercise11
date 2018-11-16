@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO.Ports;
+using System.Linq;
 
 /// <summary>
 /// Link.
@@ -63,24 +65,75 @@ namespace Linklaget
 		/// <param name='size'>
 		/// Size.
 		/// </param>
-		public void send (byte[] buf, int size)
+		public void Send (byte[] buf, int size)
 		{
 	    	// TO DO Your own code
-		}
+
+            List<Byte> byteList = new List<Byte>();
+
+		    byteList.Add(DELIMITER);
+
+		    for (int i = 0; i < size; i++)
+		    {
+		        if (buf[i] == (byte)'A')
+		        {
+		            byteList.Add((byte)'B');
+		            byteList.Add((byte)'C');
+		        }
+                else if (buf[i] == (byte)'B')
+		        {
+		            byteList.Add((byte)'B');
+		            byteList.Add((byte)'D');
+		        }
+		        else
+		        {
+		            byteList.Add(buf[i]);
+		        }
+
+		    }
+
+		    byteList.Add(DELIMITER);
+		    
+            buffer = byteList.OfType<byte>().ToArray();
+
+            serialPort.Write(buffer, 0, buffer.Length);
+   		}
 
 		/// <summary>
-		/// Receive the specified buf and size.
-		/// </summary>
-		/// <param name='buf'>
-		/// Buffer.
-		/// </param>
-		/// <param name='size'>
-		/// Size.
-		/// </param>
-		public int receive (ref byte[] buf)
+
+		public int Receive (ref byte[] buf)
 		{
-	    	// TO DO Your own code
-			return 0;
+            
+            
+
+            while(buffer[0] != 'A'){
+                // Do nothing
+                serialPort.Read(buffer, 0, buffer.Length);
+            }
+            
+            List<Byte> byteList = new List<byte>();
+
+		    for (int i = 1; i < buffer.Length; i++)
+		    {
+		        if (buffer[i] == (byte)'B' && buffer[i+1] == (byte)'C')
+		        {
+                    byteList.Add((byte)'A');
+		        }
+                else if (buffer[i] == (byte)'B' && buffer[i + 1] == (byte)'D')
+		        {
+                    byteList.Add((byte)'B');
+		        }
+		        else
+		        {
+                    byteList.Add(buffer[i]);
+		        }
+		    }
+
+		    buf = byteList.OfType<byte>().ToArray();
+            
+            
+            return buf.Length;
 		}
+        
 	}
 }

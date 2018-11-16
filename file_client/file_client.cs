@@ -6,51 +6,33 @@ using Library;
 
 namespace Application
 {
-	class file_client
+	public class file_client
 	{
-		/// <summary>
-		/// The BUFSIZE.
-		/// </summary>
+
 		private const int BUFSIZE = 1000;
 		private const string APP = "FILE_CLIENT";
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="file_client"/> class.
-		/// 
-		/// file_client metoden opretter en peer-to-peer forbindelse
-		/// Sender en forspÃ¸rgsel for en bestemt fil om denne findes pÃ¥ serveren
-		/// Modtager filen hvis denne findes eller en besked om at den ikke findes (jvf. protokol beskrivelse)
-		/// Lukker alle streams og den modtagede fil
-		/// Udskriver en fejl-meddelelse hvis ikke antal argumenter er rigtige
-		/// </summary>
-		/// <param name='args'>
-		/// Filnavn med evtuelle sti.
-		/// </param>
 	    private file_client(String[] args)
 	    {
+            Transport trans = new Transport(BUFSIZE, APP);
+
+	        byte[] bytesToSend = new byte[BUFSIZE];
+	        bytesToSend[0] = (byte) 'A';
+	        bytesToSend[1] = (byte) 'X';
+	        bytesToSend[2] = (byte) 'B';
+	        bytesToSend[3] = (byte) 'Y';
+
+	        trans.Send(bytesToSend, 4);
 	    	// TO DO Your own code
 	    }
 
-		/// <summary>
-		/// Receives the file.
-		/// </summary>
-		/// <param name='fileName'>
-		/// File name.
-		/// </param>
-		/// <param name='transport'>
-		/// Transportlaget
-		/// </param>
+
 		private void receiveFile (String fileName, Transport transport)
 		{
 			// TO DO Your own code
 		}
 
-		/// <summary>
-		/// The entry point of the program, where the program control starts and ends.
-		/// </summary>
-		/// <param name='args'>
-		/// First argument: Filname
-		/// </param>
+
 		public static void Main (string[] args)
 		{
 			new file_client(args);

@@ -14,37 +14,26 @@ namespace Application
 		private const int BUFSIZE = 1000;
 		private const string APP = "FILE_SERVER";
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="file_server"/> class.
-		/// </summary>
 		private file_server ()
 		{
-			// TO DO Your own code
+            Transport trans = new Transport(BUFSIZE, APP);
+            byte [] bytesToReceive = new byte[BUFSIZE];
+
+		    trans.Receive(ref bytesToReceive);
+		    for (int i = 0; i < 4; i++)
+		    {
+		        Console.WriteLine("Received byte: " + bytesToReceive[i]);
+		    }
+		    
+		    // TO DO Your own code
 		}
 
-		/// <summary>
-		/// Sends the file.
-		/// </summary>
-		/// <param name='fileName'>
-		/// File name.
-		/// </param>
-		/// <param name='fileSize'>
-		/// File size.
-		/// </param>
-		/// <param name='tl'>
-		/// Tl.
-		/// </param>
 		private void sendFile(String fileName, long fileSize, Transport transport)
 		{
 			// TO DO Your own code
 		}
 
-		/// <summary>
-		/// The entry point of the program, where the program control starts and ends.
-		/// </summary>
-		/// <param name='args'>
-		/// The command-line arguments.
-		/// </param>
+
 		public static void Main (string[] args)
 		{
 			new file_server();
