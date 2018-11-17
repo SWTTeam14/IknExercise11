@@ -6,36 +6,36 @@ using Library;
 
 namespace Application
 {
-	public class file_client
-	{
+    public class file_client
+    {
 
-		private const int BUFSIZE = 1000;
-		private const string APP = "FILE_CLIENT";
+        private const int BUFSIZE = 1000;
+        private const string APP = "FILE_CLIENT";
 
-	    private file_client(String[] args)
-	    {
+        private file_client(String[] args)
+        {
             Transport trans = new Transport(BUFSIZE, APP);
 
-	        byte[] bytesToSend = new byte[BUFSIZE];
-	        bytesToSend[0] = (byte) 'A';
-	        bytesToSend[1] = (byte) 'X';
-	        bytesToSend[2] = (byte) 'B';
-	        bytesToSend[3] = (byte) 'Y';
+            byte[] bytesToSend = new byte[BUFSIZE];
+            bytesToSend[0] = (byte)'A';
+            bytesToSend[1] = (byte)'X';
+            bytesToSend[2] = (byte)'B';
+            bytesToSend[3] = (byte)'Y';
 
-	        trans.Send(bytesToSend, 4);
-	    	// TO DO Your own code
-	    }
-
-
-		private void receiveFile (String fileName, Transport transport)
-		{
-			// TO DO Your own code
-		}
+            trans.Send(bytesToSend, 4);
+            // TO DO Your own code
+        }
 
 
-		public static void Main (string[] args)
-		{
-			new file_client(args);
-		}
-	}
+        private void receiveFile(String fileName, Transport transport)
+        {
+            // TO DO Your own code
+        }
+
+
+        public static void Main(string[] args)
+        {
+            file_client fc = new file_client(args);
+        }
+    }
 }
