@@ -101,6 +101,7 @@ namespace Linklaget
                 readbyte = serialPort.ReadByte();
 
                 byteList.Add((byte)readbyte);
+				
             }
 
             for (int i = 1; i < byteList.Count; i++)
