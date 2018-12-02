@@ -14,28 +14,54 @@ namespace Application
 
         private file_client(String[] args)
         {
-            ITransport trans = new Transport(BUFSIZE, APP);
-
-            byte[] bytesToSend = new byte[BUFSIZE];
-            bytesToSend[0] = (byte)'A';
-            bytesToSend[1] = (byte)'X';
-            bytesToSend[2] = (byte)'B';
-            bytesToSend[3] = (byte)'Y';
-
-            trans.Send(bytesToSend, 4);
-            // TO DO Your own code
+            ITransport trans = new Transport(BUFSIZE, APP);         
+                     
+			receiveFile(args[0], trans);
         }
 
 
         private void receiveFile(String fileName, ITransport transport)
-        {
-            // TO DO Your own code
+        {         
+			byte[] chunks = new byte[BUFSIZE];
+            
+			chunks = Encoding.Default.GetBytes(fileName);
+
+			transport.Send(chunks, chunks.Length);
+            
+			transport.Receive(ref chunks);
+			long fileSize = LIB.check_File_Exists(fileName);
+
+            if(fileSize == 0)
+			{
+				throw new Exception("File not found...");
+			}
+			else
+			{
+                Console.WriteLine("File size from server: {0} ", fileSize);
+
+				FileStream fs = File.Create(fileName);
+
+                while(fileSize > 0)
+				{                  
+					var m = transport.Receive(ref chunks);
+
+					fs.Write(chunks, 0, m);
+
+                    fileSize -= m;
+					Console.WriteLine("File size from server: {0} ", fileSize);
+				}
+				fs.Close();
+                Console.WriteLine("Received file...\n");
+				Console.WriteLine("File named {0} was created succesfully...", fileName);            
+			}
         }
 
 
         public static void Main(string[] args)
-        {
-            file_client fc = new file_client(args);
+        {         
+			Console.WriteLine("Client running...");
+			file_client fc = new file_client(args);
+            Console.ReadKey();
         }
     }
 }

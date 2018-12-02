@@ -14,31 +14,62 @@ namespace Application
         private const int BUFSIZE = 1000;
         private const string APP = "FILE_SERVER";
 
+
         private file_server()
         {
-            ITransport trans = new Transport(BUFSIZE, APP);
-            byte[] bytesToReceive = new byte[BUFSIZE];
+			while (true)
+			{            
+				try{
+					ITransport trans = new Transport(BUFSIZE, APP);
+					byte[] bytesToReceive = new byte[BUFSIZE];
 
-            trans.Receive(ref bytesToReceive);
-			char[] c = System.Text.Encoding.ASCII.GetChars(bytesToReceive);
-            for (int i = 0; i < 4; i++)
-            {
-				
-                Console.WriteLine("Received byte: " + c[i]);
-            }
+                    int fileLength = trans.Receive(ref bytesToReceive);
 
-            // TO DO Your own code
+                    string fileName = Encoding.Default.GetString(bytesToReceive, 0, fileLength);
+     
+					long fileSize = LIB.check_File_Exists(fileName);
+                       
+					Console.WriteLine($"Received file: {fileName}");
+
+					byte[] bufferToSend = BitConverter.GetBytes(fileSize);
+
+					trans.Send(bufferToSend, bufferToSend.Length);
+
+					sendFile(fileName, fileSize, trans);
+				}
+				catch(FileNotFoundException e)
+				{
+					Console.WriteLine("File not found...");
+					throw e;
+				}            
+			}
         }
 
         private void sendFile(String fileName, long fileSize, ITransport transport)
-        {
-            // TO DO Your own code
+        {         
+            FileStream fs = File.Open(fileName, FileMode.Open);
+            byte[] chunks = new byte[BUFSIZE];
+
+            Console.WriteLine("Sending file: {0}", fileName);
+
+            while(fileSize > 0)
+            {
+                int m = fs.Read(chunks, 0, BUFSIZE);
+                
+				transport.Send(chunks, BUFSIZE);
+                            
+                fileSize -= m;
+            }
+            fs.Close();
+            Console.WriteLine("File was sent succesfully...");
         }
 
 
         public static void Main(string[] args)
         {
+			Console.WriteLine("Server running...");
             file_server fs = new file_server();
+			Console.ReadKey();
         }
     }
 }
