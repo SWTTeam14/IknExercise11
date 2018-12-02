@@ -77,9 +77,7 @@ namespace Linklaget
 
             serialPort.Write(buffer, 0, buffer.Length);
         }
-
-
-
+      
         public int Receive(ref byte[] buf)
         {
             List<byte> byteList = new List<byte>();
@@ -88,10 +86,8 @@ namespace Linklaget
 
             while (readbyte != 'A')
             {
-                Console.WriteLine(readbyte + "a");
                 readbyte = serialPort.ReadByte();
 				byteList.Add((byte)readbyte);
-
             }
 
             readbyte = 0;
@@ -99,7 +95,6 @@ namespace Linklaget
             while (readbyte != 'A')
             {
                 readbyte = serialPort.ReadByte();
-
                 byteList.Add((byte)readbyte);
 				
             }
