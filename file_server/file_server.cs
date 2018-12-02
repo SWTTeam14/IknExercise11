@@ -16,7 +16,7 @@ namespace Application
 
         private file_server()
         {
-            Transport trans = new Transport(BUFSIZE, APP);
+            ITransport trans = new Transport(BUFSIZE, APP);
             byte[] bytesToReceive = new byte[BUFSIZE];
 
             trans.Receive(ref bytesToReceive);
@@ -30,7 +30,7 @@ namespace Application
             // TO DO Your own code
         }
 
-        private void sendFile(String fileName, long fileSize, Transport transport)
+        private void sendFile(String fileName, long fileSize, ITransport transport)
         {
             // TO DO Your own code
         }

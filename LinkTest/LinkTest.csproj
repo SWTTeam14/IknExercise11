@@ -5,10 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{981C1C09-64A7-47CD-A093-30083CCFFD03}</ProjectGuid>
+    <ProjectGuid>{D21A8DA6-2965-4E02-9900-D2FF4CFE8137}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Transport</RootNamespace>
-    <AssemblyName>Transport</AssemblyName>
+    <RootNamespace>LinkTest</RootNamespace>
+    <AssemblyName>LinkTest</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +22,6 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -30,20 +30,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="nunit.framework, Version=2.6.4.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Package>nunit</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="DummyTransport.cs" />
-    <Compile Include="TransConst.cs" />
-    <Compile Include="Checksum.cs" />
-    <Compile Include="ITransport.cs" />
-    <Compile Include="Transport.cs" />
+    <Compile Include="LinkTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Link\Link.csproj">
       <Project>{6D10C85B-63E3-416B-A3B8-0E6498B7C1C1}</Project>
       <Name>Link</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

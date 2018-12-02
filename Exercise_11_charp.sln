@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_client", "file_client\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIB", "LIB\LIB.csproj", "{D8DF9D64-4B60-4D4C-9782-733750DEA33B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTest", "LinkTest\LinkTest.csproj", "{D21A8DA6-2965-4E02-9900-D2FF4CFE8137}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -37,6 +39,10 @@ Global
 		{DB485B50-5258-42F1-ABC9-2774EEE3360F}.Debug|x86.Build.0 = Debug|x86
 		{DB485B50-5258-42F1-ABC9-2774EEE3360F}.Release|x86.ActiveCfg = Release|x86
 		{DB485B50-5258-42F1-ABC9-2774EEE3360F}.Release|x86.Build.0 = Release|x86
+		{D21A8DA6-2965-4E02-9900-D2FF4CFE8137}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D21A8DA6-2965-4E02-9900-D2FF4CFE8137}.Debug|x86.Build.0 = Debug|Any CPU
+		{D21A8DA6-2965-4E02-9900-D2FF4CFE8137}.Release|x86.ActiveCfg = Release|Any CPU
+		{D21A8DA6-2965-4E02-9900-D2FF4CFE8137}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = file_client\file_client.csproj

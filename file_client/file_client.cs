@@ -14,7 +14,7 @@ namespace Application
 
         private file_client(String[] args)
         {
-            Transport trans = new Transport(BUFSIZE, APP);
+            ITransport trans = new Transport(BUFSIZE, APP);
 
             byte[] bytesToSend = new byte[BUFSIZE];
             bytesToSend[0] = (byte)'A';
@@ -27,7 +27,7 @@ namespace Application
         }
 
 
-        private void receiveFile(String fileName, Transport transport)
+        private void receiveFile(String fileName, ITransport transport)
         {
             // TO DO Your own code
         }
