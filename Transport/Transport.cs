@@ -4,79 +4,132 @@ using Linklaget;
 
 namespace Transportlaget
 {
-    public class Transport : ITransport
-    {
+	public class Transport : ITransport
+	{
 
-        private Link link;
+		private Link link;
 
-        private Checksum checksum;
+		private Checksum checksum;
 
-        private byte[] buffer;
+		private byte[] buffer;
 
-        private byte seqNo;
+		private byte seqNo;
 
-        private byte old_seqNo;
+		private byte old_seqNo;
 
-        private int errorCount;
+		private int errorCount;
 
-        private const int DEFAULT_SEQNO = 2;
+		private const int DEFAULT_SEQNO = 2;
 
-        private bool dataReceived;
+		private bool dataReceived;
 
-        private int recvSize = 0;
-
-
-        public Transport(int BUFSIZE, string APP)
-        {
-            link = new Link(BUFSIZE + (int)TransSize.ACKSIZE, APP);
-            checksum = new Checksum();
-            buffer = new byte[BUFSIZE + (int)TransSize.ACKSIZE];
-            seqNo = 0;
-            old_seqNo = DEFAULT_SEQNO;
-            errorCount = 0;
-            dataReceived = false;
-        }
-
-        private bool receiveAck()
-        {
-            recvSize = link.Receive(ref buffer);
-            dataReceived = true;
-
-            if (recvSize == (int)TransSize.ACKSIZE)
-            {
-                dataReceived = false;
-                if (!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
-                  buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
-                  buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
-                {
-                    return false;
-                }
-                seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
-            }
-
-            return true;
-        }
-      
-        private void sendAck(bool ackType)
-        {
-            byte[] ackBuf = new byte[(int)TransSize.ACKSIZE];
-            ackBuf[(int)TransCHKSUM.SEQNO] = (byte)
-                (ackType ? (byte)buffer[(int)TransCHKSUM.SEQNO] : (byte)(buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
-            ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
-            checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
-            link.Send(ackBuf, (int)TransSize.ACKSIZE);
-        }
+		private int recvSize = 0;
 
 
-        public void Send(byte[] buf, int size)
-        {
-            link.Send(buf, size);         
-        }
-      
-        public int Receive(ref byte[] buf)
-        {
-            int size = link.Receive(ref buf);
-            return size;
-        }
-    }
+		public Transport(int BUFSIZE, string APP)
+		{
+			link = new Link(BUFSIZE + (int)TransSize.ACKSIZE, APP);
+			checksum = new Checksum();
+			buffer = new byte[BUFSIZE + (int)TransSize.ACKSIZE];
+			seqNo = 0;
+			old_seqNo = DEFAULT_SEQNO;
+			errorCount = 0;
+			dataReceived = false;
+		}
+
+		private bool receiveAck()
+		{
+			recvSize = link.Receive(ref buffer);
+			dataReceived = true;
+
+			if (recvSize == (int)TransSize.ACKSIZE)
+			{
+				dataReceived = false;
+				if (!checksum.checkChecksum(buffer, (int)TransSize.ACKSIZE) ||
+				  buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
+				  buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
+				{
+					return false;
+				}
+				seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
+			}
+
+			return true;
+		}
+
+		private void sendAck(bool ackType)
+		{
+			byte[] ackBuf = new byte[(int)TransSize.ACKSIZE];
+			ackBuf[(int)TransCHKSUM.SEQNO] = (byte)
+				(ackType ? (byte)buffer[(int)TransCHKSUM.SEQNO] : (byte)(buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
+			ackBuf[(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
+			checksum.calcChecksum(ref ackBuf, (int)TransSize.ACKSIZE);
+			link.Send(ackBuf, (int)TransSize.ACKSIZE);
+		}
+
+
+		public void Send(byte[] buf, int size)
+		{
+
+			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
+			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
+
+			int index = 0;
+			for (int i = 4; i < size + 4; i++)
+			{
+				buffer[i] = buf[index];
+				++index;
+			}
+
+			checksum.calcChecksum(ref buffer, size + 4);
+
+			link.Send(buffer, size + 4);
+
+			int _numberOfRetransmits = 0;
+			while (!receiveAck() && _numberOfRetransmits < 4)
+			{
+				link.Send(buffer, size + 4);
+				++_numberOfRetransmits;
+
+				if (_numberOfRetransmits == 4)
+				{
+					Console.WriteLine("Transmission failed.");
+					return;
+				}
+			}
+		}
+
+		public int Receive(ref byte[] buf)
+		{
+			bool _isSeqNoDifferent = false;
+			bool _isCheckSumOk = false;
+			int len = -1;
+
+			do
+			{
+				len = link.Receive(ref buffer);
+				_isCheckSumOk = checksum.checkChecksum(buffer, len);
+
+				if (buffer[(int)TransCHKSUM.SEQNO] != old_seqNo)
+					_isSeqNoDifferent = true;
+
+				if (!_isCheckSumOk || !_isSeqNoDifferent)
+					sendAck(false);
+				else
+					sendAck(true);
+
+			} while (!_isSeqNoDifferent && !_isCheckSumOk);
+
+			old_seqNo = buffer[(int)TransCHKSUM.SEQNO];
+
+			int index = 0;
+			for (int i = 4; i < len; ++i)
+			{
+				buf[index] = buffer[i];
+				++index;
+			}
+
+			return len - 4;
+		}
+	}
 }

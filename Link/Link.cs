@@ -78,7 +78,7 @@ namespace Linklaget
             serialPort.Write(buffer, 0, buffer.Length);
         }
       
-        public int Receive(ref byte[] buf, bool skipSerialPort = false)
+        public int Receive(ref byte[] buf)
         {
             List<byte> byteList = new List<byte>();
             List<byte> finalByteList = new List<byte>();
