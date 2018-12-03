@@ -29,12 +29,10 @@ namespace Application
 					bytesToReceive = new byte[BUFSIZE];
 
 					long fileSize = LIB.check_File_Exists(fileName);
-                       
 					Console.WriteLine($"Received request for: {fileName}");
 
-					byte[] bufferToSend = BitConverter.GetBytes(fileSize);
-
-					trans.Send(bufferToSend, bufferToSend.Length);
+					bytesToReceive = BitConverter.GetBytes(fileSize);               
+					trans.Send(bytesToReceive, bytesToReceive.Length);
 
 					sendFile(fileName, fileSize, trans);
 				}
