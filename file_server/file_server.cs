@@ -21,18 +21,19 @@ namespace Application
 			{            
 				try{
 					ITransport trans = new Transport(BUFSIZE, APP);
-					byte[] bytesToReceive = new byte[BUFSIZE];
+					byte[] buffer = new byte[BUFSIZE];
+					int fileLength = 0;
 
-					int fileLength = trans.Receive(ref bytesToReceive);               
-                    string fileName = Encoding.Default.GetString(bytesToReceive, 0, fileLength);
+					fileLength = trans.Receive(ref buffer);               
+					string fileName = Encoding.Default.GetString(buffer, 0, fileLength);
      
-					bytesToReceive = new byte[BUFSIZE];
+					buffer = new byte[BUFSIZE];
 
 					long fileSize = LIB.check_File_Exists(fileName);
 					Console.WriteLine($"Received request for: {fileName}");
 
-					bytesToReceive = BitConverter.GetBytes(fileSize);               
-					trans.Send(bytesToReceive, bytesToReceive.Length);
+					buffer = BitConverter.GetBytes(fileSize);               
+					trans.Send(buffer, buffer.Length);
 
 					sendFile(fileName, fileSize, trans);
 				}
@@ -46,19 +47,26 @@ namespace Application
 
         private void sendFile(String fileName, long fileSize, ITransport transport)
         {
-			//FileStream fs = File.Open(fileName, FileMode.Open);
 			FileStream fs = new FileStream(fileName, FileMode.Open);
             byte[] chunks = new byte[BUFSIZE];
                      
             Console.WriteLine("Sending file: {0}", fileName);
 
-            while(fileSize > 0)
+			int bytesReceived = 0;
+			int sizeOfChunk = BUFSIZE;
+
+            while(fileSize > bytesReceived)
             {
-                int m = fs.Read(chunks, 0, BUFSIZE);
+                fs.Read(chunks, 0, sizeOfChunk);
                 
-				transport.Send(chunks, BUFSIZE);
+				transport.Send(chunks, sizeOfChunk);
+
+				bytesReceived += BUFSIZE;
                             
-                fileSize -= m;
+				if((bytesReceived < fileSize) && (bytesReceived + BUFSIZE > fileSize))
+				{
+					sizeOfChunk = (int)fileSize - bytesReceived;
+				}
             }
             fs.Close();
             Console.WriteLine("File was sent succesfully...");

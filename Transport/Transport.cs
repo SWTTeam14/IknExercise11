@@ -70,10 +70,11 @@ namespace Transportlaget
 
 		public void Send(byte[] buf, int size)
 		{
-			
+			buffer = new byte[size];
 			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
 			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
-    
+            
+
 			int index = 0;
 			for (int i = 4; i < size+4; i++)
 			{
