@@ -9,13 +9,9 @@ namespace Linklaget
 
     public class Link
     {
-
         const byte DELIMITER = (byte)'A';
-
         private byte[] buffer;
-
         SerialPort serialPort;
-
 
         public Link(int BUFSIZE, string APP)
         {
@@ -35,21 +31,9 @@ namespace Linklaget
             serialPort.DiscardOutBuffer();
         }
 
-        /// <summary>
-        /// Send the specified buf and size.
-        /// </summary>
-        /// <param name='buf'>
-        /// Buffer.
-        /// </param>
-        /// <param name='size'>
-        /// Size.
-        /// </param>
         public void Send(byte[] buf, int size)
         {
-            // TO DO Your own code
-
             List<Byte> byteList = new List<Byte>();
-
             byteList.Add(DELIMITER);
 
             for (int i = 0; i < size; i++)
@@ -68,13 +52,9 @@ namespace Linklaget
                 {
                     byteList.Add(buf[i]);
                 }
-
             }
-
             byteList.Add(DELIMITER);
-
             buffer = byteList.OfType<byte>().ToArray();
-
             serialPort.Write(buffer, 0, buffer.Length);
         }
       
@@ -89,14 +69,12 @@ namespace Linklaget
                 readbyte = serialPort.ReadByte();
 				byteList.Add((byte)readbyte);
             }
-
             readbyte = 0;
 
             while (readbyte != 'A')
             {
                 readbyte = serialPort.ReadByte();
-                byteList.Add((byte)readbyte);
-				
+                byteList.Add((byte)readbyte);				
             }
 
             for (int i = 1; i < byteList.Count; i++)
@@ -120,13 +98,9 @@ namespace Linklaget
 					finalByteList.Add(byteList[i]);
                 }
             }
-
             buf = finalByteList.OfType<byte>().ToArray();
-
-
             return buf.Length;
         }
-
         public byte[] GetBuffer()
 		{
 			return buffer; 
