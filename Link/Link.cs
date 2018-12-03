@@ -70,7 +70,6 @@ namespace Linklaget
 
 		public int Receive(ref byte[] buf)
 		{
-			List<byte> byteList = new List<byte>();
 			List<byte> finalByteList = new List<byte>();
 			int readbyte = 0;
 			var checkOnA = (int)Convert.ToByte('A');

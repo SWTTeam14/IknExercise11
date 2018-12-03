@@ -104,8 +104,7 @@ namespace Transportlaget
 			bool _isSeqNoDifferent = false;
 			bool _isCheckSumOk = false;
 			int len = -1;
-
-
+                     
 			do
 			{
 				len = link.Receive(ref buffer);
