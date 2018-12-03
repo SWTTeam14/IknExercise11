@@ -77,12 +77,6 @@ namespace Linklaget
 			while (readbyte != checkOnA)
 			{
 				readbyte = serialPort.ReadByte();
-			}
-			readbyte = 0;
-
-			while (readbyte != checkOnA)
-			{
-				readbyte = serialPort.ReadByte();
                  
 				if (readbyte == (byte)'B')
 				{

@@ -14,24 +14,24 @@ namespace Application
 
         private file_client(String[] args)
         {
-            ITransport trans = new Transport(BUFSIZE, APP);         
-                     
-			receiveFile(args[0], trans);
+            ITransport trans = new Transport(BUFSIZE, APP);     
+
+			receiveFile("Test.txt", new Transport(BUFSIZE, APP));
         }
 
 
         private void receiveFile(String fileName, ITransport transport)
         {         
-			byte[] chunks = new byte[BUFSIZE];
+			byte[] buffer = new byte[BUFSIZE];
             
-			chunks = Encoding.ASCII.GetBytes(fileName);
+			buffer = Encoding.ASCII.GetBytes(fileName);
 
-			transport.Send(chunks, chunks.Length);
+			transport.Send(buffer, buffer.Length);
 
-			chunks = new byte[BUFSIZE];
+			buffer = new byte[BUFSIZE];
 
-			transport.Receive(ref chunks);
-			long fileSize = BitConverter.ToInt64(chunks, 0);
+			transport.Receive(ref buffer);
+			long fileSize = BitConverter.ToInt64(buffer, 0);
             
             if(fileSize == 0)
 			{
@@ -43,13 +43,21 @@ namespace Application
 
 				FileStream fs = File.Create(fileName);
 
-                while(fileSize > 0)
-				{                  
-					var m = transport.Receive(ref chunks);
+				int counter = 1000, lastRead = 1;
 
-					fs.Write(chunks, 0, chunks.Length);
+                while(lastRead >= 0)
+				{                  
+					transport.Receive(ref buffer);
+
+					fs.Write(buffer, 0, counter);
                     
-                    fileSize -= m;
+                    fileSize -= 1000;
+
+                    if(fileSize < 1000)
+					{
+						counter = (int)fileSize;
+						--lastRead;
+					}
 
 					Console.WriteLine("File size from server: {0} ", fileSize);
 				}
