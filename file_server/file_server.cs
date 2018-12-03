@@ -17,67 +17,55 @@ namespace Application
 
         private file_server()
         {
-			while (true)
-			{            
-				try{
-					ITransport trans = new Transport(BUFSIZE, APP);
-					byte[] buffer = new byte[BUFSIZE];
-					int fileLength = 0;
+            while (true)
+            {
+                try
+                {
+                    ITransport trans = new Transport(BUFSIZE, APP);
+                    byte[] buffer = new byte[BUFSIZE];
+                    int fileLength = 0;
 
-					fileLength = trans.Receive(ref buffer);               
-					string fileName = Encoding.Default.GetString(buffer, 0, fileLength);
-     
-					buffer = new byte[BUFSIZE];
+                    fileLength = trans.Receive(ref buffer);
+                    string fileName = Encoding.Default.GetString(buffer, 0, fileLength);
 
-					long fileSize = LIB.check_File_Exists(fileName);
-					Console.WriteLine($"Received request for: {fileName}");
+                    buffer = new byte[BUFSIZE];
 
-					buffer = BitConverter.GetBytes(fileSize);               
-					trans.Send(buffer, buffer.Length);
-
-					sendFile(fileName, fileSize, trans);
-				}
-				catch(FileNotFoundException e)
-				{
-					Console.WriteLine("File not found...");
-					throw e;
-				}            
-			}
+                    long fileSize = LIB.check_File_Exists(fileName);
+                    Console.WriteLine($"Received request for: {fileName}");
+                    long length = new System.IO.FileInfo(fileName).Length;
+                    buffer = BitConverter.GetBytes(fileSize);
+                    trans.Send(buffer, buffer.Length);
+                    sendFile(fileName, fileSize, trans);
+                }
+                catch (FileNotFoundException e)
+                {
+                    Console.WriteLine("File not found...");
+                    throw e;
+                }
+            }
         }
 
         private void sendFile(String fileName, long fileSize, ITransport transport)
         {
-			FileStream fs = new FileStream(fileName, FileMode.Open);
+            FileStream fs = File.Open(fileName, FileMode.Open);
             byte[] chunks = new byte[BUFSIZE];
-                     
             Console.WriteLine("Sending file: {0}", fileName);
 
-			int bytesReceived = 0;
-			int sizeOfChunk = BUFSIZE;
-
-            while(fileSize > bytesReceived)
+            while (fileSize > 0)
             {
-                fs.Read(chunks, 0, sizeOfChunk);
-                
-				transport.Send(chunks, sizeOfChunk);
-
-				bytesReceived += BUFSIZE;
-                            
-				if((bytesReceived < fileSize) && (bytesReceived + BUFSIZE > fileSize))
-				{
-					sizeOfChunk = (int)fileSize - bytesReceived;
-				}
+                int m = fs.Read(chunks, 0, BUFSIZE);
+                transport.Send(chunks, m);
+                fileSize -= m;
             }
             fs.Close();
             Console.WriteLine("File was sent succesfully...");
         }
 
-
         public static void Main(string[] args)
         {
-			Console.WriteLine("Server running...");
+            Console.WriteLine("Server running...");
             file_server fs = new file_server();
-			Console.ReadKey();
+            Console.ReadKey();
         }
     }
 }
