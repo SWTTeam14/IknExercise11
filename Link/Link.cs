@@ -9,13 +9,9 @@ namespace Linklaget
 
     public class Link
     {
-
         const byte DELIMITER = (byte)'A';
-
         private byte[] buffer;
-
         SerialPort serialPort;
-
 
         public Link(int BUFSIZE, string APP)
         {
@@ -35,22 +31,18 @@ namespace Linklaget
             serialPort.DiscardOutBuffer();
         }
 
-        /// <summary>
-        /// Send the specified buf and size.
-        /// </summary>
-        /// <param name='buf'>
-        /// Buffer.
-        /// </param>
-        /// <param name='size'>
-        /// Size.
-        /// </param>
         public void Send(byte[] buf, int size)
         {
+<<<<<<< HEAD
 			// TO DO Your own code
 
 			int index= 0;
 			buffer[index] = DELIMITER;
 			++index;
+=======
+            List<Byte> byteList = new List<Byte>();
+            byteList.Add(DELIMITER);
+>>>>>>> 96c34c9e9a1fa7e9ec8ae77634ea05a1c6a03f93
 
             for (int i = 0; i < size; i++)
             {
@@ -73,13 +65,18 @@ namespace Linklaget
 					buffer[index] = buf[i];
 					++index;
                 }
-
             }
+<<<<<<< HEAD
 
 			buffer[index] = (byte)'A';
 			++index;
             
             serialPort.Write(buffer, 0, index);         
+=======
+            byteList.Add(DELIMITER);
+            buffer = byteList.OfType<byte>().ToArray();
+            serialPort.Write(buffer, 0, buffer.Length);
+>>>>>>> 96c34c9e9a1fa7e9ec8ae77634ea05a1c6a03f93
         }
       
         public int Receive(ref byte[] buf)
@@ -93,12 +90,16 @@ namespace Linklaget
             {
                 readbyte = serialPort.ReadByte();
             }
-
             readbyte = 0;
 
 			while (readbyte != checkOnA)
             {
                 readbyte = serialPort.ReadByte();
+<<<<<<< HEAD
+=======
+                byteList.Add((byte)readbyte);				
+            }
+>>>>>>> 96c34c9e9a1fa7e9ec8ae77634ea05a1c6a03f93
 
 				if (readbyte == (byte)'B')
                     {
@@ -115,6 +116,7 @@ namespace Linklaget
     				    Console.WriteLine("End of array...");
 				}
                 else
+<<<<<<< HEAD
                     {
 					    finalByteList.Add((byte)readbyte);
                     }            
@@ -122,9 +124,15 @@ namespace Linklaget
 
             buf = finalByteList.OfType<byte>().ToArray();
             
+=======
+                {
+					finalByteList.Add(byteList[i]);
+                }
+            }
+            buf = finalByteList.OfType<byte>().ToArray();
+>>>>>>> 96c34c9e9a1fa7e9ec8ae77634ea05a1c6a03f93
             return buf.Length;
         }
-
         public byte[] GetBuffer()
 		{
 			return buffer; 
