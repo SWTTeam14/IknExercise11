@@ -30,7 +30,7 @@ namespace Application
 
 					long fileSize = LIB.check_File_Exists(fileName);
                        
-					Console.WriteLine($"Received file: {fileName}");
+					Console.WriteLine($"Received request for: {fileName}");
 
 					byte[] bufferToSend = BitConverter.GetBytes(fileSize);
 
@@ -47,10 +47,11 @@ namespace Application
         }
 
         private void sendFile(String fileName, long fileSize, ITransport transport)
-        {         
-            FileStream fs = File.Open(fileName, FileMode.Open);
+        {
+			//FileStream fs = File.Open(fileName, FileMode.Open);
+			FileStream fs = new FileStream(fileName, FileMode.Open);
             byte[] chunks = new byte[BUFSIZE];
-
+                     
             Console.WriteLine("Sending file: {0}", fileName);
 
             while(fileSize > 0)

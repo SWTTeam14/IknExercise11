@@ -69,11 +69,11 @@ namespace Linklaget
 			++index;
             
             serialPort.Write(buffer, 0, index);         
-
+            
             //Annes kode fra merge
             //byteList.Add(DELIMITER);
             //buffer = byteList.OfType<byte>().ToArray();
-            //7serialPort.Write(buffer, 0, buffer.Length);
+            //serialPort.Write(buffer, 0, buffer.Length);
 
         }
 
@@ -93,7 +93,7 @@ namespace Linklaget
 			while (readbyte != checkOnA)
 			{
 				readbyte = serialPort.ReadByte();
-                
+                 
 				if (readbyte == (byte)'B')
 				{
 					if (readbyte == (byte)'C')

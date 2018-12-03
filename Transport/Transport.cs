@@ -69,7 +69,8 @@ namespace Transportlaget
 
 
 		public void Send(byte[] buf, int size)
-		{         
+		{
+			buffer = new byte[size + (int)TransSize.ACKSIZE];
 			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
 			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
     
@@ -89,7 +90,7 @@ namespace Transportlaget
 			{
 				link.Send(buffer, size + 4);
 				++_numberOfBadMessages;
-
+                
 				if (_numberOfBadMessages == 4)
 				{
 					Console.WriteLine("Failed 5 times, terminating...");
