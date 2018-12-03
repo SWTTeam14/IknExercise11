@@ -59,7 +59,7 @@ namespace Transportlaget
 
 		public void Send(byte[] buf, int size)
 		{
-			buffer = new byte[size];
+			buffer = new byte[size+4];
 			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
 			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
             
