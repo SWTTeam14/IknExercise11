@@ -37,13 +37,12 @@ namespace Linklaget
 
 			int index= 0;
 			buffer[index] = DELIMITER;
+<<<<<<< HEAD
 			//buf = new byte[buffer.Length];
+=======
+>>>>>>> 32a93307b17f91409184511396855b090cc3edef
 			++index;
-
-            //Annes kode fra merge
-            //List<Byte> byteList = new List<Byte>();
-            //byteList.Add(DELIMITER);
-
+   
             for (int i = 0; i < size; ++i)
             {
                 if (buf[i] == (byte)'A')
@@ -69,13 +68,8 @@ namespace Linklaget
 			buffer[index] = (byte)'A';
 			++index;
             
-            serialPort.Write(buffer, 0, index);         
-            
-            //Annes kode fra merge
-            //byteList.Add(DELIMITER);
-            //buffer = byteList.OfType<byte>().ToArray();
-            //serialPort.Write(buffer, 0, buffer.Length);
-
+            serialPort.Write(buffer, 0, index);
+                     
         }
 
 		public int Receive(ref byte[] buf)
