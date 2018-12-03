@@ -70,7 +70,7 @@ namespace Transportlaget
 
 		public void Send(byte[] buf, int size)
 		{
-			buffer = new byte[size + (int)TransSize.ACKSIZE];
+			buffer = new byte[size + (int)TransSize.ACKSIZE]; //New addition. Sets the correct buffer size. Otherwise we get an indexOutOfBoundsExeception
 			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
 			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
     
