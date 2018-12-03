@@ -105,9 +105,11 @@ namespace Transportlaget
 			bool _isCheckSumOk = false;
 			int len = -1;
 
+
 			do
 			{
 				len = link.Receive(ref buffer);
+				buf = new byte[len];
 				_isCheckSumOk = checksum.checkChecksum(buffer, len);
 
 				if (buffer[(int)TransCHKSUM.SEQNO] != old_seqNo)
@@ -128,7 +130,7 @@ namespace Transportlaget
 				buf[index] = buffer[i];
 				++index;
 			}
-
+            
 			return len - 4;
 		}
 	}

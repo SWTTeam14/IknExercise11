@@ -24,13 +24,13 @@ namespace Application
         {         
 			byte[] chunks = new byte[BUFSIZE];
             
-			chunks = Encoding.Default.GetBytes(fileName);
+			chunks = Encoding.ASCII.GetBytes(fileName);
 
 			transport.Send(chunks, chunks.Length);
             
 			transport.Receive(ref chunks);
-			long fileSize = LIB.check_File_Exists(fileName);
-
+			long fileSize = BitConverter.ToInt64(chunks, 0);
+            
             if(fileSize == 0)
 			{
 				throw new Exception("File not found...");
@@ -45,9 +45,10 @@ namespace Application
 				{                  
 					var m = transport.Receive(ref chunks);
 
-					fs.Write(chunks, 0, m);
-
+					fs.Write(chunks, 0, chunks.Length);
+                    
                     fileSize -= m;
+
 					Console.WriteLine("File size from server: {0} ", fileSize);
 				}
 				fs.Close();
