@@ -1,30 +1,19 @@
 ﻿using System;
 using Linklaget;
 
-
 namespace Transportlaget
 {
 	public class Transport : ITransport
 	{
-
-		private Link link;
-
+        private Link link;
 		private Checksum checksum;
-
 		private byte[] buffer;
-
 		private byte seqNo;
-
 		private byte old_seqNo;
-
 		private int errorCount;
-
 		private const int DEFAULT_SEQNO = 2;
-
 		private bool dataReceived;
-
 		private int recvSize = 0;
-
 
 		public Transport(int BUFSIZE, string APP)
 		{

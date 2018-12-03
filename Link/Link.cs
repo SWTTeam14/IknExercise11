@@ -6,103 +6,124 @@ using System.Linq;
 
 namespace Linklaget
 {
-
     public class Link
     {
         const byte DELIMITER = (byte)'A';
         private byte[] buffer;
-        SerialPort serialPort;
+        private SerialPort serialPort;
+        private FakeSerialPort fakeSerialPort;
+        private bool _useFakeSerialPort;
 
-        public Link(int BUFSIZE, string APP)
+        public Link(int BUFSIZE, string APP) : this(BUFSIZE, APP, false, new byte[]{})
+        {
+        }
+
+        public Link(int BUFSIZE, string APP, bool useFakeSerialPort, byte[] fakeBuffer)
         {
             // Create a new SerialPort object with default settings.
+            _useFakeSerialPort = useFakeSerialPort; 
+            if (useFakeSerialPort)
+            {
+                fakeSerialPort = new FakeSerialPort(fakeBuffer);
+            }
+            else
+            {
+                serialPort = new SerialPort("/dev/ttyS1", 115200, Parity.None, 8, StopBits.One);
 
-            serialPort = new SerialPort("/dev/ttyS1", 115200, Parity.None, 8, StopBits.One);
+                if (!serialPort.IsOpen)
+                    serialPort.Open();
 
-            if (!serialPort.IsOpen)
-                serialPort.Open();
-
+                serialPort.DiscardInBuffer();
+                serialPort.DiscardOutBuffer();
+            }
+          
             buffer = new byte[(BUFSIZE * 2)];
-
-            // Uncomment the next line to use timeout
-            //serialPort.ReadTimeout = 500;
-
-            serialPort.DiscardInBuffer();
-            serialPort.DiscardOutBuffer();
         }
 
         public void Send(byte[] buf, int size)
         {
-			// TO DO Your own code
+            List<Byte> byteList = new List<Byte>();
 
-			int index= 0;
-			buffer[index] = DELIMITER;
-			++index;
-   
-            for (int i = 0; i < size; ++i)
+            byteList.Add(DELIMITER);
+
+            for (int i = 0; i < size; i++)
             {
                 if (buf[i] == (byte)'A')
                 {
-					buffer[index] = (byte)'B';
-					++index;
-					buffer[index] = (byte)'C';
-					++index;
+                    byteList.Add((byte)'B');
+                    byteList.Add((byte)'C');
                 }
                 else if (buf[i] == (byte)'B')
                 {
-					buffer[index] = (byte)'B';
-					++index;
-					buffer[index] = (byte)'D';
-					++index;
+                    byteList.Add((byte)'B');
+                    byteList.Add((byte)'D');
                 }
                 else
                 {
-					buffer[index] = buf[i];
-					++index;
+                    byteList.Add(buf[i]);
                 }
-            }         
-			buffer[index] = (byte)'A';
-			++index;
-            
-            serialPort.Write(buffer, 0, index);
-                     
+            }
+
+            byteList.Add(DELIMITER);
+            buffer = byteList.OfType<byte>().ToArray();
+            serialPort.Write(buffer, 0, buffer.Length);
         }
 
-		public int Receive(ref byte[] buf)
-		{
-			List<byte> finalByteList = new List<byte>();
-			int readbyte = 0;
-			var checkOnA = (int)Convert.ToByte('A');
+        public int Receive(ref byte[] buf)
+        {
+            List<byte> initialByteList = new List<byte>();
+            List<byte> finalByteList = new List<byte>();
+            int readbyte = 0;
+            var checkOnA = (int)Convert.ToByte('A');
 
-			while (readbyte != checkOnA)
-			{
-				readbyte = serialPort.ReadByte();
-                 
-				if (readbyte == (byte)'B')
-				{
-					if (readbyte == (byte)'C')
-						finalByteList.Add((byte)'A');
-				}
-				else if (readbyte == (byte)'B')
-				{
-					if (readbyte == (byte)'D')
-						finalByteList.Add((byte)'B');
-				}
-				else if (readbyte == (byte)'A')
-				{
-					Console.WriteLine("End of array...");
-				}
-				else
-				{
-					finalByteList.Add((byte)readbyte);
-				}
-			}
+            //Skip all characters until start byte is received
+            while (readbyte != checkOnA)
+            {
+                readbyte = _useFakeSerialPort ? fakeSerialPort.ReadByte() : serialPort.ReadByte();
+            }
 
-            buf = finalByteList.OfType<byte>().ToArray();
+            readbyte = 0;
 
+            //Read all bytes into a byte array
+            while (readbyte != checkOnA)
+            {
+                readbyte = _useFakeSerialPort ? fakeSerialPort.ReadByte() : serialPort.ReadByte();
+                if (readbyte != checkOnA)
+                {
+                    initialByteList.Add((byte)readbyte);
+                }
+            }
+            buf = Decoder(initialByteList.ToArray());
             return buf.Length;
         }
 
+        //Decode content of a frame - note this content is without delimiter. 
+        public byte[] Decoder(byte[] input)
+        {
+            List<byte> finalByteList = new List<byte>();
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == (byte)'B' && input[i + 1] == (byte)'C')
+                {
+                    finalByteList.Add((byte)'A');
+                    i++;
+                }
+                else if (input[i] == (byte)'B' && input[i + 1] == (byte)'D')
+                {
+                    finalByteList.Add((byte)'B');
+                    i++;
+                }
+                else
+                {
+                    finalByteList.Add(input[i]);
+                }
+            }
+
+            return finalByteList.ToArray();
+        }
+
+        //Only made so it is possible to test Link layers send method
         public byte[] GetBuffer()
 		{
 			return buffer; 

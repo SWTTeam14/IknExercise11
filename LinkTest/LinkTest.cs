@@ -19,9 +19,10 @@ namespace LinkTest
             byte[] bytesToSend = Encoding.ASCII.GetBytes("AXBY");
             link.Send(bytesToSend, bytesToSend.Length);
             byte[] bytesExpected = Encoding.ASCII.GetBytes("ABCXBDYA");
-
-			byte[] bytesSend = link.GetBuffer();
-			Assert.IsTrue(bytesExpected.SequenceEqual(bytesSend));
+            byte[] bytesSend = link.GetBuffer();
+            string str = Encoding.ASCII.GetString(bytesSend);
+            Console.WriteLine(str);
+            Assert.IsTrue(bytesExpected.SequenceEqual(bytesSend));
         }
 
 		[Test]
@@ -46,6 +47,28 @@ namespace LinkTest
 
             byte[] bytesSend = link.GetBuffer();
             Assert.IsTrue(bytesExpected.SequenceEqual(bytesSend));
+        }
+
+        [Test]
+        public void Receive_Test1()
+        {
+            byte[] bytesToBeReceived = Encoding.ASCII.GetBytes("ABCXBDYA");
+            Link link = new Link(BUFSIZE, APP, true, bytesToBeReceived);
+            byte[] buffer = new byte[100];
+            link.Receive(ref buffer);
+            byte[] bytesExpected = Encoding.ASCII.GetBytes("AXBY");
+            Assert.IsTrue(bytesExpected.SequenceEqual(buffer));
+        }
+
+        [Test]
+        public void Receive_Test2_leadingNoise()
+        {
+            byte[] bytesToBeReceived = Encoding.ASCII.GetBytes("PZYABCXBDYA");
+            Link link = new Link(BUFSIZE, APP, true, bytesToBeReceived);
+            byte[] buffer = new byte[100];
+            link.Receive(ref buffer);
+            byte[] bytesExpected = Encoding.ASCII.GetBytes("AXBY");
+            Assert.IsTrue(bytesExpected.SequenceEqual(buffer));
         }
     }
 }
