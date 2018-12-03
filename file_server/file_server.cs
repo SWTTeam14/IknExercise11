@@ -23,10 +23,11 @@ namespace Application
 					ITransport trans = new Transport(BUFSIZE, APP);
 					byte[] bytesToReceive = new byte[BUFSIZE];
 
-                    int fileLength = trans.Receive(ref bytesToReceive);
-
+					int fileLength = trans.Receive(ref bytesToReceive);               
                     string fileName = Encoding.Default.GetString(bytesToReceive, 0, fileLength);
      
+					bytesToReceive = new byte[BUFSIZE];
+
 					long fileSize = LIB.check_File_Exists(fileName);
                        
 					Console.WriteLine($"Received file: {fileName}");

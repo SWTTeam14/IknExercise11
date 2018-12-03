@@ -46,36 +46,40 @@ namespace Linklaget
         /// </param>
         public void Send(byte[] buf, int size)
         {
-            // TO DO Your own code
+			// TO DO Your own code
 
-            List<Byte> byteList = new List<Byte>();
-
-            byteList.Add(DELIMITER);
+			int index= 0;
+			buffer[index] = DELIMITER;
+			++index;
 
             for (int i = 0; i < size; i++)
             {
                 if (buf[i] == (byte)'A')
                 {
-                    byteList.Add((byte)'B');
-                    byteList.Add((byte)'C');
+					buffer[index] = (byte)'B';
+					++index;
+					buffer[index] = (byte)'C';
+					++index;
                 }
                 else if (buf[i] == (byte)'B')
                 {
-                    byteList.Add((byte)'B');
-                    byteList.Add((byte)'D');
+					buffer[index] = (byte)'B';
+					++index;
+					buffer[index] = (byte)'D';
+					++index;
                 }
                 else
                 {
-                    byteList.Add(buf[i]);
+					buffer[index] = buf[i];
+					++index;
                 }
 
             }
 
-            byteList.Add(DELIMITER);
-
-            buffer = byteList.OfType<byte>().ToArray();
-
-            serialPort.Write(buffer, 0, buffer.Length);
+			buffer[index] = (byte)'A';
+			++index;
+            
+            serialPort.Write(buffer, 0, index);         
         }
       
         public int Receive(ref byte[] buf)
@@ -83,47 +87,41 @@ namespace Linklaget
             List<byte> byteList = new List<byte>();
             List<byte> finalByteList = new List<byte>();
             int readbyte = 0;
+			var checkOnA = (int)Convert.ToByte('A');
 
-            while (readbyte != 'A')
+			while (readbyte != checkOnA)
             {
                 readbyte = serialPort.ReadByte();
-				byteList.Add((byte)readbyte);
             }
 
             readbyte = 0;
 
-            while (readbyte != 'A')
+			while (readbyte != checkOnA)
             {
                 readbyte = serialPort.ReadByte();
-                byteList.Add((byte)readbyte);
-				
-            }
 
-            for (int i = 1; i < byteList.Count; i++)
-            {
-                if (byteList[i] == (byte)'B' && byteList[i + 1] == (byte)'C')
-                {
-                    finalByteList.Add((byte)'A');
-					i++;
-                }
-				else if (byteList[i] == (byte)'B' && byteList[i + 1] == (byte)'D')
-                {
-                    finalByteList.Add((byte)'B');
-					i++;
-                }
-				else if(byteList[i] == (byte)'A')
-				{
-					i++;
-				}            
+				if (readbyte == (byte)'B')
+                    {
+    					if(readbyte == (byte)'C')
+    						finalByteList.Add((byte)'A');
+                    }
+				else if (readbyte == (byte)'B')
+                    {
+    					if(readbyte == (byte)'D')
+                            finalByteList.Add((byte)'B');
+                    }
+				else if(readbyte == (byte)'A')
+    				{
+    				    Console.WriteLine("End of array...");
+				}
                 else
-                {
-					finalByteList.Add(byteList[i]);
-                }
-            }
+                    {
+					    finalByteList.Add((byte)readbyte);
+                    }            
+			}
 
             buf = finalByteList.OfType<byte>().ToArray();
-
-
+            
             return buf.Length;
         }
 
