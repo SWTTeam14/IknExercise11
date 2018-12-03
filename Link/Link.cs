@@ -111,6 +111,10 @@ namespace Linklaget
                     finalByteList.Add((byte)'B');
 					i++;
                 }
+				else if(byteList[i] == (byte)'A')
+				{
+					i++;
+				}            
                 else
                 {
 					finalByteList.Add(byteList[i]);
