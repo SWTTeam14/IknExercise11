@@ -77,6 +77,7 @@ namespace Transportlaget
             for (int i = 0; i < max; i++)
 			{
 
+<<<<<<< HEAD
 			}
 			int index = 0;
 			for (int i = 4; i < size + 4; i++)
@@ -91,13 +92,24 @@ namespace Transportlaget
 
 			int _numberOfRetransmits = 0;
 			while (!receiveAck() && _numberOfRetransmits < 4)
+=======
+            for (int i = 0; i < size; i++)
+            {
+                buffer[i + 4] = buf[i];
+            }
+            checksum.calcChecksum(ref buffer, buffer.Length);
+            link.Send(buffer, size);
+
+            int _numberOfBadMessages = 0;
+			while (!receiveAck() && _numberOfBadMessages < 4)
+>>>>>>> d710e469ce0d49f4b36ee55eb0cbe26904aa51c0
 			{
 				link.Send(buffer, size + 4);
-				++_numberOfRetransmits;
+				++_numberOfBadMessages;
 
-				if (_numberOfRetransmits == 4)
+				if (_numberOfBadMessages == 4)
 				{
-					Console.WriteLine("Transmission failed.");
+					Console.WriteLine("Failed 5 times, terminating...");
 					return;
 				}
 			}
