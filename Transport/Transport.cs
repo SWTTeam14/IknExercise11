@@ -73,7 +73,11 @@ namespace Transportlaget
 
 			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
 			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
+            
+            for (int i = 0; i < max; i++)
+			{
 
+			}
 			int index = 0;
 			for (int i = 4; i < size + 4; i++)
 			{
