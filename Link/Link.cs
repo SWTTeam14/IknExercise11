@@ -37,10 +37,6 @@ namespace Linklaget
 
 			int index= 0;
 			buffer[index] = DELIMITER;
-<<<<<<< HEAD
-			//buf = new byte[buffer.Length];
-=======
->>>>>>> 32a93307b17f91409184511396855b090cc3edef
 			++index;
    
             for (int i = 0; i < size; ++i)
