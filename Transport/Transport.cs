@@ -59,27 +59,27 @@ namespace Transportlaget
 
 		public void Send(byte[] buf, int size)
 		{
-			buffer = new byte[size+4];
-			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
-			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
-            
-
-			int index = 0;
-			for (int i = 4; i < size+4; i++)
+            buffer = new byte[size+4];
+			//Copy data
+			int i = 0;
+            for (int j = 4; j < size+4; j++)
 			{
-                buffer[i] = buf[index];
-                ++index;
+                buffer[j] = buf[i];
+                i++;
 			}
 
-			checksum.calcChecksum(ref buffer, size + 4);
-
+            //Write header - four bytes
+            buffer[(int)TransCHKSUM.SEQNO] = seqNo;
+            buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
+            checksum.calcChecksum(ref buffer, size + 4);
+            //Send buffer
 			link.Send(buffer, size + 4);
             
             int _numberOfBadMessages = 0;
 			while (!receiveAck() && _numberOfBadMessages < 4)
 			{
 				link.Send(buffer, size + 4);
-				++_numberOfBadMessages;
+				_numberOfBadMessages++;
                 
 				if (_numberOfBadMessages == 4)
 				{
@@ -113,11 +113,11 @@ namespace Transportlaget
 
 			old_seqNo = buffer[(int)TransCHKSUM.SEQNO];
 
-			int index = 0;
-			for (int i = 4; i < len; ++i)
+			int i = 0;
+			for (int j = 4; j < len; ++j)
 			{
-				buf[index] = buffer[i];
-				++index;
+				buf[i] = buffer[j];
+				i++;
 			}
             
 			return len - 4;
