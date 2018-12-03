@@ -16,7 +16,7 @@ namespace Application
         {
             ITransport trans = new Transport(BUFSIZE, APP);         
                      
-			receiveFile("Hello.txt", trans);
+			receiveFile(args[0], trans);
         }
 
 
