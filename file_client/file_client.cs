@@ -16,7 +16,7 @@ namespace Application
         {
             ITransport trans = new Transport(BUFSIZE, APP);         
                      
-			receiveFile(args[0], trans);
+			receiveFile("Hello.txt", trans);
         }
 
 
@@ -27,7 +27,9 @@ namespace Application
 			chunks = Encoding.ASCII.GetBytes(fileName);
 
 			transport.Send(chunks, chunks.Length);
-            
+
+			chunks = new byte[BUFSIZE];
+
 			transport.Receive(ref chunks);
 			long fileSize = BitConverter.ToInt64(chunks, 0);
             

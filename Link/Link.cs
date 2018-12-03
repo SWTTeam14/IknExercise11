@@ -37,7 +37,7 @@ namespace Linklaget
 
 			int index= 0;
 			buffer[index] = DELIMITER;
-			buf = new byte[buffer.Length];
+			//buf = new byte[buffer.Length];
 			++index;
 
             //Annes kode fra merge
