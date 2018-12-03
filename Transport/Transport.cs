@@ -74,25 +74,25 @@ namespace Transportlaget
 			buffer[(int)TransCHKSUM.SEQNO] = seqNo;
 			buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
             
-            for (int i = 0; i < max; i++)
-			{
+            //for (int i = 0; i < max; i++)
+			//{
 
-<<<<<<< HEAD
-			}
-			int index = 0;
-			for (int i = 4; i < size + 4; i++)
-			{
-				buffer[i] = buf[index];
-				++index;
-			}
 
-			checksum.calcChecksum(ref buffer, size + 4);
+			//}
+			//int index = 0;
+			//for (int i = 4; i < size + 4; i++)
+			//{
+			//	buffer[i] = buf[index];
+			//	++index;
+			//}
 
-			link.Send(buffer, size + 4);
+			//checksum.calcChecksum(ref buffer, size + 4);
 
-			int _numberOfRetransmits = 0;
-			while (!receiveAck() && _numberOfRetransmits < 4)
-=======
+			//link.Send(buffer, size + 4);
+
+			//int _numberOfRetransmits = 0;
+			//while (!receiveAck() && _numberOfRetransmits < 4)
+
             for (int i = 0; i < size; i++)
             {
                 buffer[i + 4] = buf[i];
@@ -102,7 +102,6 @@ namespace Transportlaget
 
             int _numberOfBadMessages = 0;
 			while (!receiveAck() && _numberOfBadMessages < 4)
->>>>>>> d710e469ce0d49f4b36ee55eb0cbe26904aa51c0
 			{
 				link.Send(buffer, size + 4);
 				++_numberOfBadMessages;
