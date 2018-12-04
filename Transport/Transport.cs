@@ -57,8 +57,7 @@ namespace Transportlaget
             if (++errorCount == 3) // Simulate noise
             {
                 ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
-                //Console.WriteLine("Noise!byte #1 is spoiled in the third transmitted ACK-package");
-                errorCount = 0;
+                Console.WriteLine("Noise!byte #1 is spoiled in the third transmitted ACK-package");
             }
             link.Send(ackBuf, (int)TransSize.ACKSIZE);
         }
@@ -88,7 +87,6 @@ namespace Transportlaget
                 {
                     buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
                     Console.WriteLine("Noise!-byte #1 is spoiled in the third transmission");
-                    errorCount = 0;
                 }
                 //Send buffer
                 //Console.WriteLine("Send: seqNo = {0}, TransType = {1}, errorCount = {2}", seqNo, (int)TransType.DATA, errorCount);
