@@ -29,13 +29,17 @@ namespace Application
      
 					buffer = new byte[BUFSIZE];
 
+                    //check_File_Exists returns filesize
 					long fileSize = LIB.check_File_Exists(fileName);
+					if (fileSize == 0)
+                    {
+                        throw new FileNotFoundException();
+                    }
 					Console.WriteLine($"Received request for: {fileName}");
-
+					//Convert filesize to byte array
 					buffer = BitConverter.GetBytes(fileSize);               
 					trans.Send(buffer, buffer.Length);
-
-					sendFile(fileName, fileSize, trans);
+                    sendFile(fileName, fileSize, trans);
 				}
 				catch(FileNotFoundException e)
 				{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Linklaget;
 
 namespace Transportlaget
@@ -113,14 +114,8 @@ namespace Transportlaget
 
 			old_seqNo = buffer[(int)TransCHKSUM.SEQNO];
 
-			int i = 0;
-			for (int j = 4; j < len; ++j)
-			{
-				buf[i] = buffer[j];
-				i++;
-			}
-            
-			return len - 4;
+			buf = buffer.Skip(4).ToArray();
+            return buf.Length;
 		}
 	}
 }

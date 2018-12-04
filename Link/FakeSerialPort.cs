@@ -16,7 +16,7 @@ namespace Linklaget
         public new int ReadByte()
         {
             byte b = _readBuffer[0];
-            _readBuffer = _readBuffer.Skip(1).Take(_readBuffer.Count()-1).ToArray();
+            _readBuffer = _readBuffer.Skip(1).ToArray();
             return b;
         }      
     }
