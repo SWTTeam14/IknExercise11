@@ -66,12 +66,6 @@ namespace Transportlaget
 
         public void Send(byte[] buf, int size)
         {
-            buffer = new byte[size + 4];
-            //Copy data
-            for (int i = 0; i < size; i++)
-            {
-                buffer[i + 4] = buf[i];
-            }
             int numberOfTransmits = 0;
             do
             {
@@ -79,6 +73,12 @@ namespace Transportlaget
                 {
                     Console.WriteLine("Failed 5 times, terminating...");
                     return;
+                }
+                buffer = new byte[size + 4];
+                //Copy data
+                for (int i = 0; i < size; i++)
+                {
+                    buffer[i + 4] = buf[i];
                 }
                 //Write header - four bytes
                 buffer[(int)TransCHKSUM.SEQNO] = seqNo;
