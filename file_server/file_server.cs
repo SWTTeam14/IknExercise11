@@ -24,27 +24,27 @@ namespace Application
                     ITransport trans = new Transport(BUFSIZE, APP);
                     byte[] buffer = new byte[BUFSIZE];
                     int fileLength = 0;
-					fileLength = trans.Receive(ref buffer);
+                    fileLength = trans.Receive(ref buffer);
                     string fileName = Encoding.Default.GetString(buffer, 0, fileLength);
 
                     //check_File_Exists returns filesize
-					long fileSize = LIB.check_File_Exists(fileName);
+                    long fileSize = LIB.check_File_Exists(fileName);
                     Console.WriteLine($"Received request for: {fileName}");
-					//Convert filesize to byte array
-					buffer = BitConverter.GetBytes(fileSize);               
-					trans.Send(buffer, buffer.Length);
-					if (fileSize == 0)
+                    //Convert filesize to byte array
+                    buffer = BitConverter.GetBytes(fileSize);
+                    trans.Send(buffer, buffer.Length);
+                    if (fileSize == 0)
                     {
                         throw new FileNotFoundException();
                     }
                     sendFile(fileName, fileSize, trans);
-				}
-				catch(FileNotFoundException e)
-				{
-					Console.WriteLine("File not found...");
-					throw e;
-				}            
-			}            
+                }
+                catch (FileNotFoundException e)
+                {
+                    Console.WriteLine("File not found...");
+                    throw e;
+                }
+            }
         }
 
         private void sendFile(String fileName, long fileSize, ITransport transport)

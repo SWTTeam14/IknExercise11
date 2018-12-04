@@ -14,14 +14,14 @@ namespace Linklaget
         private FakeSerialPort fakeSerialPort;
         private bool _useFakeSerialPort;
 
-        public Link(int BUFSIZE, string APP) : this(BUFSIZE, APP, false, new byte[]{})
+        public Link(int BUFSIZE, string APP) : this(BUFSIZE, APP, false, new byte[] { })
         {
         }
 
         public Link(int BUFSIZE, string APP, bool useFakeSerialPort, byte[] fakeBuffer)
         {
             // Create a new SerialPort object with default settings.
-            _useFakeSerialPort = useFakeSerialPort; 
+            _useFakeSerialPort = useFakeSerialPort;
             if (useFakeSerialPort)
             {
                 fakeSerialPort = new FakeSerialPort(fakeBuffer);
@@ -36,7 +36,7 @@ namespace Linklaget
                 serialPort.DiscardInBuffer();
                 serialPort.DiscardOutBuffer();
             }
-          
+
             buffer = new byte[(BUFSIZE * 2)];
         }
 
@@ -125,8 +125,8 @@ namespace Linklaget
 
         //Only made so it is possible to test Link layers send method
         public byte[] GetBuffer()
-		{
-			return buffer; 
-		}
+        {
+            return buffer;
+        }
     }
 }

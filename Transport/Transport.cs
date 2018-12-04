@@ -32,6 +32,7 @@ namespace Transportlaget
 			recvSize = link.Receive(ref buffer);
 			dataReceived = true;
 
+            //Note that receiveSize must be four - otherwise true i returned. This may be a bug.
 			if (recvSize == (int)TransSize.ACKSIZE)
 			{
 				dataReceived = false;
@@ -39,12 +40,11 @@ namespace Transportlaget
 				  buffer[(int)TransCHKSUM.SEQNO] != seqNo ||
 				  buffer[(int)TransCHKSUM.TYPE] != (int)TransType.ACK)
 				{
-					return false;
+					return false; //No valid ACK has been received
 				}
 				seqNo = (byte)((buffer[(int)TransCHKSUM.SEQNO] + 1) % 2);
 			}
-
-			return true;
+			return true; //ACK received
 		}
 
 		private void sendAck(bool ackType)
@@ -62,11 +62,9 @@ namespace Transportlaget
 		{
             buffer = new byte[size+4];
 			//Copy data
-			int i = 0;
-            for (int j = 4; j < size+4; j++)
+			for (int i = 0; i < size; i++)
 			{
-                buffer[j] = buf[i];
-                i++;
+                buffer[i+4] = buf[i];
 			}
 
             //Write header - four bytes
@@ -75,45 +73,34 @@ namespace Transportlaget
             checksum.calcChecksum(ref buffer, size + 4);
             //Send buffer
 			link.Send(buffer, size + 4);
-            
-            int _numberOfBadMessages = 0;
-			while (!receiveAck() && _numberOfBadMessages < 4)
+            int _numberOfTransmits = 1;
+			while (!receiveAck())
 			{
-				link.Send(buffer, size + 4);
-				_numberOfBadMessages++;
-                
-				if (_numberOfBadMessages == 4)
-				{
-					Console.WriteLine("Failed 5 times, terminating...");
-					return;
-				}
+                if (_numberOfTransmits == 5)
+                {
+                    Console.WriteLine("Failed 5 times, terminating...");
+                    return;
+                }
+                link.Send(buffer, size + 4);
+                _numberOfTransmits++;				
 			}
 		}
 
 		public int Receive(ref byte[] buf)
 		{
-			bool _isSeqNoDifferent = false;
-			bool _isCheckSumOk = false;
-			int len = -1;
+			bool isAllOk;
+			int len;
                      
 			do
 			{
 				len = link.Receive(ref buffer);
-            
-				_isCheckSumOk = checksum.checkChecksum(buffer, len);
-
-				if (buffer[(int)TransCHKSUM.SEQNO] != old_seqNo)
-					_isSeqNoDifferent = true;
-
-				if (!_isCheckSumOk || !_isSeqNoDifferent)
-					sendAck(false);
-				else
-					sendAck(true);
-
-			} while (!_isSeqNoDifferent && !_isCheckSumOk);
+                bool isCheckSumOk = checksum.checkChecksum(buffer, len);
+                bool isSeqNoDifferent = (buffer[(int)TransCHKSUM.SEQNO] != old_seqNo);
+                isAllOk = isCheckSumOk && isSeqNoDifferent;
+                sendAck(isAllOk);
+			} while (!isAllOk);
 
 			old_seqNo = buffer[(int)TransCHKSUM.SEQNO];
-
 			buf = buffer.Skip(4).ToArray();
             return buf.Length;
 		}
