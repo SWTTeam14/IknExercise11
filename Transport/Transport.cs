@@ -110,7 +110,7 @@ namespace Transportlaget
                 len = link.Receive(ref buffer);
                 bool isCheckSumOk = checksum.checkChecksum(buffer, len);
                 bool isSeqNoDifferent = (buffer[(int)TransCHKSUM.SEQNO] != old_seqNo);
-                Console.WriteLine("Send: seqNo = {0}, old_seqNo = {1}", buffer[(int)TransCHKSUM.SEQNO], old_seqNo);
+                Console.WriteLine("Receive: seqNo = {0}, old_seqNo = {1}", buffer[(int)TransCHKSUM.SEQNO], old_seqNo);
                 isAllOk = isCheckSumOk && isSeqNoDifferent;
                 sendAck(isAllOk);
             } while (!isAllOk);
