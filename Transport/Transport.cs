@@ -57,7 +57,7 @@ namespace Transportlaget
             if (++errorCount == 3) // Simulate noise
             {
                 ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
-                Console.WriteLine("Noise!byte #1 is spoiled in the third transmitted ACK-package");
+                //Console.WriteLine("Noise!byte #1 is spoiled in the third transmitted ACK-package");
                 errorCount = 0;
             }
             link.Send(ackBuf, (int)TransSize.ACKSIZE);
@@ -91,7 +91,7 @@ namespace Transportlaget
                     errorCount = 0;
                 }
                 //Send buffer
-                Console.WriteLine("Send: seqNo = {0}, TransType = {1}, errorCount = {2}", seqNo, (int)TransType.DATA, errorCount);
+                //Console.WriteLine("Send: seqNo = {0}, TransType = {1}, errorCount = {2}", seqNo, (int)TransType.DATA, errorCount);
                 link.Send(buffer, size + 4);
                 numberOfTransmits++;
                 if (numberOfTransmits > 1)
@@ -113,7 +113,7 @@ namespace Transportlaget
                 len = link.Receive(ref buffer);
                 bool isCheckSumOk = checksum.checkChecksum(buffer, len);
                 bool isSeqNoDifferent = (buffer[(int)TransCHKSUM.SEQNO] != old_seqNo);
-                Console.WriteLine("Receive: seqNo = {0}, old_seqNo = {1}", buffer[(int)TransCHKSUM.SEQNO], old_seqNo);
+                //Console.WriteLine("Receive: seqNo = {0}, old_seqNo = {1}", buffer[(int)TransCHKSUM.SEQNO], old_seqNo);
                 isAllOk = isCheckSumOk && isSeqNoDifferent;
                 sendAck(isAllOk);
             } while (!isAllOk);
