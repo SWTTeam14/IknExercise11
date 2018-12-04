@@ -58,6 +58,7 @@ namespace Transportlaget
             {
                 ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
                 Console.WriteLine("Noise!byte #1 is spoiled in the third transmitted ACK-package");
+                errorCount = 0;
             }
             link.Send(ackBuf, (int)TransSize.ACKSIZE);
         }
@@ -71,32 +72,30 @@ namespace Transportlaget
             {
                 buffer[i + 4] = buf[i];
             }
-
-            //Write header - four bytes
-            buffer[(int)TransCHKSUM.SEQNO] = seqNo;
-            buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
-            checksum.calcChecksum(ref buffer, size + 4);
-            if (++errorCount == 3) // Simulate noise
+            int numberOfTransmits = 0;
+            do
             {
-                buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
-                Console.WriteLine("Noise!-byte #1 is spoiled in the third transmission");
-            }
-            //Send buffer
-            Console.WriteLine("Send: seqNo = {0}, TransType = {1}, errorCount = {2}", seqNo, (int)TransType.DATA, errorCount);
-            link.Send(buffer, size + 4);
-            int numberOfTransmits = 1;
-            while (!receiveAck())
-            {
-                Console.WriteLine("Retransmision. numberOfTransmits = {0}", numberOfTransmits);
                 if (numberOfTransmits == 5)
                 {
                     Console.WriteLine("Failed 5 times, terminating...");
                     return;
                 }
+                //Write header - four bytes
+                buffer[(int)TransCHKSUM.SEQNO] = seqNo;
+                buffer[(int)TransCHKSUM.TYPE] = (int)TransType.DATA;
+                checksum.calcChecksum(ref buffer, size + 4);
+                if (++errorCount == 3) // Simulate noise
+                {
+                    buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+                    Console.WriteLine("Noise!-byte #1 is spoiled in the third transmission");
+                    errorCount = 0;
+                }
+                //Send buffer
                 Console.WriteLine("Send: seqNo = {0}, TransType = {1}, errorCount = {2}", seqNo, (int)TransType.DATA, errorCount);
                 link.Send(buffer, size + 4);
                 numberOfTransmits++;
-            }
+                Console.WriteLine("Retransmision. numberOfTransmits = {0}", numberOfTransmits);
+            } while (!receiveAck());
             old_seqNo = DEFAULT_SEQNO;
         }
 
