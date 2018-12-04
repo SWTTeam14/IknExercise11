@@ -94,7 +94,11 @@ namespace Transportlaget
                 Console.WriteLine("Send: seqNo = {0}, TransType = {1}, errorCount = {2}", seqNo, (int)TransType.DATA, errorCount);
                 link.Send(buffer, size + 4);
                 numberOfTransmits++;
-                Console.WriteLine("Retransmision. numberOfTransmits = {0}", numberOfTransmits);
+                if (numberOfTransmits > 1)
+                {
+                    Console.WriteLine("Retransmision. numberOfTransmits = {0}", numberOfTransmits);
+                }
+
             } while (!receiveAck());
             old_seqNo = DEFAULT_SEQNO;
         }
