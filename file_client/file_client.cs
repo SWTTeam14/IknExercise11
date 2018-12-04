@@ -14,7 +14,7 @@ namespace Application
         private File_client(String[] args)
         {
             ITransport trans = new Transport(BUFSIZE, APP);
-            ReceiveFile("gris.jpg", trans);
+            ReceiveFile(args[0], trans);
         }
 
 		private void ReceiveFile(String fileName, ITransport transport)
@@ -38,7 +38,7 @@ namespace Application
                 fs.Write(chunks, 0, m);
                 Console.WriteLine("Chunk contains: {0} bytes", m);
                 fileSize -= m;
-                Console.WriteLine("Filesize: {0}", fileSize);
+                Console.WriteLine("Filecontent remaning: {0} bytes", fileSize);
             }
 
             Console.WriteLine("File named {0} was created succesfully...", fileName);
