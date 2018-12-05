@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="DummyTransport.cs" />
     <Compile Include="TransConst.cs" />
     <Compile Include="Checksum.cs" />
     <Compile Include="ITransport.cs" />
